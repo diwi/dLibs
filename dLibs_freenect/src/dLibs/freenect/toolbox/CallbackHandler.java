@@ -1,0 +1,110 @@
+package dLibs.freenect.toolbox;
+
+import com.sun.jna.Callback;
+import com.sun.jna.Pointer;
+
+import dLibs.freenect.Kinect;
+import dLibs.freenect.constants.LOG_LEVEL;
+
+
+
+public abstract class CallbackHandler{
+
+  protected Kinect   kinect_device_  = null;
+  protected String   name_           = "";
+  protected int      index_          = -1;
+  
+  protected String   message_        = "";
+  protected boolean  console_output_ = false;
+  
+  protected int      frame_count_          = 0;
+  protected float    framerate_            = -1;
+  protected long     framerate_last_nanos_ = 0;
+  protected boolean  process_framerate_    = true;
+  
+
+  protected CallbackHandler( Kinect kinect_device, String name){
+    this.kinect_device_ = kinect_device;
+    this.name_ = name;
+    index_ = (kinect_device_ != null) ? kinect_device_.getIndex() : -1;
+  }
+ 
+  public final void setMessage( String message ){
+    this.message_ = message;
+  }
+  public final int getFrameCount(){
+    return frame_count_;
+  }
+  public final void resetFrameCount(){
+    frame_count_ = 0;
+  }
+  public final void enableConsoleOutput(boolean console_output){
+    this.console_output_ = console_output;
+  }
+  public final void enableFrameRate(boolean process_framerate){
+    this.process_framerate_ = process_framerate;
+  }   
+  protected final void computeFrameRate(){
+    long now = System.nanoTime();
+    framerate_ = (framerate_ * .9f) + 1E08f / (now - framerate_last_nanos_);
+    framerate_last_nanos_ = now;
+  } 
+  public final float getFrameRate(){
+    return framerate_;
+  } 
+  protected final void defaultActionOnCall(){
+    frame_count_++;                         // frameCount
+    if( process_framerate_ )
+      computeFrameRate();                   // frameRate
+    else
+      framerate_ = -1;
+    if( console_output_ ){
+      System.out.println(message_ +" ... fps: "+framerate_); 
+    }
+  }
+  public void onCall(String msg){
+  }
+
+  
+
+  
+  public static class LogCB extends CallbackHandler implements Callback {
+    LOG_LEVEL current_log_level_ = null;
+
+    public LogCB( Kinect kinect_device){ 
+      super(kinect_device, "LogCallback");
+    }
+    public LOG_LEVEL getLogLevel(){
+      return current_log_level_;
+    }
+    public final void callback(Pointer dev, int log_level, String msg){
+      current_log_level_ = LOG_LEVEL.getByValue(log_level);
+      setMessage(">>>> ("+name_+" - on kinect "+index_+") >>>> got call: loglevel = "+current_log_level_);
+      defaultActionOnCall();
+      onCall(msg);
+    }
+  }
+  
+  public static class VideoCB extends CallbackHandler implements Callback{
+    public VideoCB(Kinect kinect_device){
+      super(kinect_device, "VideoCallback");
+      setMessage(">>>> ("+name_+" - on kinect "+index_+") >>>> got call");
+    }
+    public final void callback(Pointer dev, Pointer frame, int timestamp){
+      defaultActionOnCall();
+      onCall("");
+    }
+  }
+  
+  public static class DepthCB extends CallbackHandler implements Callback{
+    public DepthCB(Kinect kinect_device){
+      super(kinect_device, "Depthallback");
+      setMessage(">>>> ("+name_+" - on kinect "+index_+") >>>> got call");
+    }
+    public final void callback(Pointer dev, Pointer frame, int timestamp){
+      defaultActionOnCall();
+      onCall("");
+    }
+  } 
+}
+

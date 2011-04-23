@@ -1,0 +1,4 @@
+dLibs.freenect
+dLibs.freenect.constants
+dLibs.freenect.interfaces
+dLibs.freenect.toolbox

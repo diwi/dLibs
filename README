@@ -1,0 +1,128 @@
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+AUTHOR: Thomas Diewald
+Date: 23.04.2011
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+
+
+################################################################################
+--------------------------------------------------------------------------------
+PROCESSING / JAVA - Kinect Library - dLibs.freenect
+--------------------------------------------------------------------------------
+################################################################################
+
+
+- this library is based on the libfreenect-software (http://openkinect.org)
+- it only works on windows Machines (winXP, win7, ... x86, x64)
+- i tested it with the following processing versions:
+  "processing 1.07" to "processing 1.5"
+- there is no guarantee that it really works on every machine
+
+
+--------------------------------------------------------------------------------
+ZIP_CONTENT:
+1) processing examples
+2) reference
+3) source-code
+4) library:  
+      dlibs_freenect.jar
+      libfreenect/freenect.dll
+      kinect_driver_windows/xbox nui camera, ...motor, ...audio
+      calibration/kinect_calibration_red.yml, ...kinect_calibration_yellow.yml
+      
+
+--------------------------------------------------------------------------------
+FEATURES:
+- depth frame
+- video frame (RGB, BAYER, IR, YUV, ...)
+- 3D-DATA
+- extended LED-control
+- extended TILT-control
+- color/depth mapping !!
+- camera-calibration (data from file) --> for color/depth-mapping
+- 3d-transformation
+- build-in camera-cone
+- basic console logging
+- multiple kinects ( i tested it with two kinect-devices )
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+HOW TO USE IT
+--------------------------------------------------------------------------------
+1) follow the installation-instructions
+2) try to run the examples in the examples-folder.
+3) and always have a look at the reference (im sorry, that there is no 
+   proper documentation yet)
+
+   
+   
+   
+   
+--------------------------------------------------------------------------------
+INSTALLATION:
+--------------------------------------------------------------------------------
+1)
+  download the library: https://github.com/diwi/dLibs
+ 
+2)
+  extract archieve and move the folder "dLibs_freenect" to your library folder 
+  insider your sketchbook-location.
+
+3)
+  connect the kinect to your pc
+
+4) 
+  install the drivers:
+  (... inside the folder: dLibs_freenect/library/kinect_driver_windows/...)
+
+5)
+  because i compiled the "freenect.dll" with visual studio, you have to install
+  "Microsoft Visual C++ 2010 Redistributable Package" (just 5mb)
+  if you still have problems, try to find the missing links with 
+  "dependecy walker"
+  
+
+  
+  
+  
+
+
+  
+--------------------------------------------------------------------------------
+CALIBRATION
+--------------------------------------------------------------------------------
+
+in order to get some good 3d-data, and proper color/depth mapping i recommend
+to do some calibration.
+to do this, follow the instructions of the README in the folder:
+"dLibs_freenect/library/calibration/"
+
+i put two example calibrations files there, for testing.
+but i made the experience that no kinect is like the other,
+...so every calibration for a kinect is different!
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

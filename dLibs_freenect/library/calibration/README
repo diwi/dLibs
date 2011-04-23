@@ -1,0 +1,143 @@
+
+
+Kinect Calibration: WINDOWS
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+get calibration-app from here:
+
+http://nicolas.burrus.name/index.php/Research/Kinect
+http://nicolas.burrus.name/index.php/Research/KinectCalibration
+http://nicolas.burrus.name/index.php/Research/KinectRgbDemoV4
+
+
+Instructions: thomas diewald:
+1) start: rgbd-viewer.exe
+    1.2) Menue -> Capture  -> Dual RGB/IR mode
+    1.3) set output directory: Options -> output dir "output_dir"
+    1.3) place chessboard square visible to both cameras 
+    1.4) save frame: Menue -> File -> Grab one Frame (Ctrl + G);
+    1.5) repeat (1.3 - 1.4) 10 to 30 times
+    
+2) start: calibrate_kinect_ir.exe
+    2.1) windows console: 
+    calibrate_kinect_ir output_dir --pattern-size 0.025 
+    (0.025 = size of suares - in meter - from printed chessboard)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+http://nicolas.burrus.name/index.php/Research/Kinect
+http://nicolas.burrus.name/index.php/Research/KinectCalibration
+http://nicolas.burrus.name/index.php/Research/KinectRgbDemoV4
+
+
+Instructions: nicolas burrus:
+ - Calibrating your Kinect - 
+(explanation from http://nicolas.burrus.name/index.php/Research/KinectRgbDemoV4)
+
+A sample calibration file is provided in data/kinect_calibration.yml. 
+However, you should be able to get a more accurate mapping by estimating new 
+parameters for each Kinect. Below is the procedure I follow.
+
+1.  Build a calibration pattern as shown in KinectCalibration. 
+    You can use the Chessboard_A4.pdf or Chessboard_A3.pdf file in 
+    the data/ directory for this. I recommend printing the chessboard on a 
+    sheet of paper and glue it on a peace of carton. 
+    It is not necessary anymore to cut the carton around the paper.
+
+2.  Grab some images of your chessboard using the 
+    viewer (File / Grab frame or Ctrl-G). 
+    WARNING: you need to grab images in Dual IR/RGB more (enable it in the 
+    Capture menu). 
+    By default it will save them into directories grab1/view????. 
+    These directories contain the raw files, 
+    raw/color.png, raw/depth.yml, raw/intensity.png 
+    that corresponds to the color image, the depth image (in meters), and the 
+    IR image normalized to grayscale. 
+    You will also get an additional raw/depth.png which is the depth image 
+    normalized to grayscale.
+
+    
+    To get an optimal calibration, grabbed images should ensure the following:
+
+    * Cover as most image area as possible. Especially check for coverage of 
+        the image corners.
+        
+    * Try to get the chessboard as close as possible to the camera to get 
+        better precision.
+        
+    * For depth calibration, you will need some images with IR and depth. 
+        But for stereo calibration, the depth information is not required, so 
+        feel free to cover the IR projector and get very close to the camera to 
+        better estimate IR intrinsics and stereo parameters. 
+        The calibration algorithm will automatically determine which grabbed 
+        images can be used for depth calibration.
+        
+    * Move the chessboard with various angles.
+    
+    * I usually grab a set of 30 images to average the errors.
+    
+    * Typical reprojection error is < 1 pixel. If you get significantly higher 
+        values, it means the calibration failed. 
+
+        
+        
+3. Run the calibration program:
+
+build/bin/calibrate_kinect_ir --pattern-size 0.025 grab1
+
+The pattern size correspond to the size in meters of one chessboard square. 
+It should be 0.025 (25mm) for the A4 model.
+
+This will generate the kinect_calibration.yml file storing the parameters for 
+the viewer, and two files calibration_rgb.yaml and calibration_depth.yaml 
+for ROS compatibility. 
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
