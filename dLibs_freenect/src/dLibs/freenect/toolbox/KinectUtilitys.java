@@ -1,3 +1,25 @@
+/**
+ * dLibs.freenect - Kinect Java/Processing Library.
+ * 
+ * Copyright (c) 2011 Thomas Diewald
+ *
+ *
+ * This source is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 package dLibs.freenect.toolbox;
 
 public abstract class KinectUtilitys {
@@ -66,13 +88,15 @@ public abstract class KinectUtilitys {
 
   
   
-  
+  private static final float hsb2rgb_factor_hi = 1f/60f;
+  private static final float hsb2rgb_factor_S  = 1f/100f;
+  private static final float hsb2rgb_factor_V  = 1f/100f;
   public final static int hsb2rgb(float hue, float sat, float brigh){
     float r = 0, g = 0, b = 0;
 
-    float hi = hue   /  60f;
-    float S  = sat   / 100f;
-    float V  = brigh / 100f;
+    float hi = hue   * hsb2rgb_factor_hi;
+    float S  = sat   * hsb2rgb_factor_S;
+    float V  = brigh * hsb2rgb_factor_V;
     
     float f  = hi - (int)hi;
     
@@ -95,15 +119,17 @@ public abstract class KinectUtilitys {
     b *= 255;
 
 //    return ( (int)r <<16 |  (int)g<<8 | (int)b<<0);
-    return ( (255 << 24) | (((int)r & 0xFF) << 16) | (((int)g & 0xFF) << 8) | (((int)b & 0xFF) << 0) );
+    return ( 0xFF000000 | (((int)r & 0xFF) << 16) | (((int)g & 0xFF) << 8) | (((int)b & 0xFF) << 0) );
   } // end float[] hsb2rgb(float h, float s, float b)
   
   
   
+  
+  private static final float depth2rgb_DIWI_factor_depth = 1f/215f;
   public final static int depth2rgb_DIWI(float depth){
     float r = 0, g = 0, b = 0;
 
-    float hi = depth / 215f;
+    float hi = depth * depth2rgb_DIWI_factor_depth;
 
     float f  = (hi - (int)hi)*255;
     
@@ -122,15 +148,19 @@ public abstract class KinectUtilitys {
       case 6: r = V; g = t; b = p; break;
     }
 //    return (  (int)r <<16 |  (int)g<<8 | (int)b<<0);
-    return ( (255 << 24) | (((int)r & 0xFF) << 16) | (((int)g & 0xFF) << 8) | (((int)b & 0xFF) << 0) );
+    return ( 0xFF000000 | (((int)r & 0xFF) << 16) | (((int)g & 0xFF) << 8) | (((int)b & 0xFF) << 0) );
   } // end float[] hsb2rgb(float h, float s, float b)
   
 
+  
+  private static final float depth2rgb_factor = (6*6*256f)/(2047f*2047f*2047f);
+  
   public final static int depth2rgb(float depth){
     int r = 0, g = 0, b = 0;
 //    float f = depth / 2047f;
 //    int pval = (int)(f*f*f * 6 * 6 * 256f);
-    int pval = (int)(depth*depth*depth/930702.9f);
+//    int pval = (int)(depth*depth*depth/930702.9f);
+    int pval = (int)(depth*depth*depth*depth2rgb_factor);
     int lb = pval & 0xff;
     switch (pval>>8) {
      case 0:  r = 255-lb;  g = 255-lb;  b = 255;     break;
@@ -140,7 +170,7 @@ public abstract class KinectUtilitys {
      case 4:  r = 255;     g = 255-lb;  b = 0;       break;
      case 5:  r = 255-lb;  g = 0;       b = 0;       break;
     }
-    return ( (255 << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0) );
+    return ( 0xFF000000 | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0) );
   }
   
   

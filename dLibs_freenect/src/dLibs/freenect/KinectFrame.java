@@ -1,3 +1,25 @@
+/**
+ * dLibs.freenect - Kinect Java/Processing Library.
+ * 
+ * Copyright (c) 2011 Thomas Diewald
+ *
+ *
+ * This source is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 package dLibs.freenect;
 
 import java.nio.ByteBuffer;
@@ -12,8 +34,8 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
   protected boolean    process_PImage_        = false;
   protected boolean    process_pixels_        = false;
   protected boolean    process_depth_mapping_ = false;
-  protected float      actual_framerate_      = 60.0f;
-  protected float      forced_framerate_      = 60.0f;
+  protected float      actual_framerate_      = 30.0f;
+  protected float      forced_framerate_      = 30.0f;
   protected boolean    active                 = false;
   
   protected final ByteBuffer  byte_buffer_    ;
@@ -150,8 +172,9 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
       actual_framerate_ = (actual_framerate_ * .9f) + 1E08f / time_dif_millis;
     }
 
+    private final static float framerate_fac = 1f/1000000f;
     public void setFrameRate( float set_frame_rate){
-      float time_dif_milliseconds = (System.nanoTime() - framerate_last_nanos_set_framerate_)/ 1000000f;
+      float time_dif_milliseconds = (System.nanoTime() - framerate_last_nanos_set_framerate_)*framerate_fac;
       float waiting_time = (1000/set_frame_rate) - time_dif_milliseconds;   
       float waiting_time_real = waiting_time >= 0 ? waiting_time : 0; 
       try { Thread.sleep((int)waiting_time_real); } catch (InterruptedException e) { e.printStackTrace();}

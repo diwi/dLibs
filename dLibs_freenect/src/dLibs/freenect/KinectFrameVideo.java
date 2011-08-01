@@ -1,3 +1,25 @@
+/**
+ * dLibs.freenect - Kinect Java/Processing Library.
+ * 
+ * Copyright (c) 2011 Thomas Diewald
+ *
+ *
+ * This source is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 package dLibs.freenect;
 
 
@@ -55,39 +77,43 @@ public class KinectFrameVideo extends KinectFrame{
   // _RGB_ //-------------------------------------------------------------------
   protected final void frame_RGB_(){
     int byte_index = 0;  
+    int r, g, b;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int r =  buffer_cpy_[byte_index+0] & 255;
-      int g =  buffer_cpy_[byte_index+1] & 255;
-      int b =  buffer_cpy_[byte_index+2] & 255;
-      byte_index += 3;
-      pixels_colors_tmp[i] = (255 << 24) | (r << 16) | (g << 8) | (b << 0) ;
+      byte_index = i*3;
+      r =  buffer_cpy_[byte_index  ] & 0xFF;
+      g =  buffer_cpy_[byte_index+1] & 0xFF;
+      b =  buffer_cpy_[byte_index+2] & 0xFF;
+      pixels_colors_tmp[i] = 0xFF000000 | (r << 16) | (g << 8) | b  ;
     }
   }
   
   // _BAYER_ //-----------------------------------------------------------------
   protected final void frame_BAYER_(){ 
+    int gray;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int gray =  buffer_cpy_[i] & 255;
-      pixels_colors_tmp[i] = (255 << 24) | (gray << 16) | (gray << 8) | (gray << 0) ;
+      gray =  buffer_cpy_[i] & 0xFF;
+      pixels_colors_tmp[i] = 0xFF000000 | (gray << 16) | (gray << 8) | gray ;
     }
   }
   
   // _IR_8BIT_ //---------------------------------------------------------------
   protected final void frame_IR_8BIT_(){ 
+    int gray;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int gray =  buffer_cpy_[i] & 255;
-      pixels_colors_tmp[i] = (255 << 24) | (gray << 16) | (gray << 8) | (gray << 0) ;
+      gray =  buffer_cpy_[i] & 0xFF;
+      pixels_colors_tmp[i] = 0xFF000000| (gray << 16) | (gray << 8) | gray ;
     }
   }
   
   // _IR_10BIT_ //--------------------------------------------------------------
   protected final void frame_IR_10BIT_(){ 
-    int byte_index = 0;    
+    int byte_index = 0;   
+    int gray1, gray2, tmp;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int gray1 =  buffer_cpy_[byte_index] & 255;
-      int gray2 =  buffer_cpy_[byte_index+1] & 255;
-      byte_index += 2;
-      int tmp = (255 << 24) | (0 << 16) | (gray2 << 8) | (gray1 << 0);
+      byte_index = i*2;
+      gray1 =  buffer_cpy_[byte_index  ] & 0xFF;
+      gray2 =  buffer_cpy_[byte_index+1] & 0xFF;
+      tmp = 0xFF000000 | (0 << 16) | (gray2 << 8) | gray1;
   //    int gray = (int) (tmp/2f);
   //    int gray = tmp > 255 ? 255 : tmp;
   //    byte_index += 2;
@@ -99,27 +125,29 @@ public class KinectFrameVideo extends KinectFrame{
   // _YUV_RGB_ //---------------------------------------------------------------
   protected final void frame_YUV_RGB_(){ 
     int byte_index = 0;     
+    int r, g, b;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int r =  buffer_cpy_[byte_index+0] & 255;
-      int g =  buffer_cpy_[byte_index+1] & 255;
-      int b =  buffer_cpy_[byte_index+2] & 255;
-      byte_index += 3;
-      pixels_colors_tmp[i] = (255 << 24) | (r << 16) | (g << 8) | (b << 0) ;
+      byte_index = i*3;
+      r =  buffer_cpy_[byte_index  ] & 255;
+      g =  buffer_cpy_[byte_index+1] & 255;
+      b =  buffer_cpy_[byte_index+2] & 255;
+      pixels_colors_tmp[i] = 0xFF000000 | (r << 16) | (g << 8) | b ;
     }
   }
   
   // _YUV_RAW_ //---------------------------------------------------------------
   protected final void frame_YUV_RAW_(){ 
     int byte_index = 0;    
+    int gray, gray1, gray2, tmp;
     for(int i = 0; i < pixels_colors_tmp.length; i++){
-      int gray1 =  buffer_cpy_[byte_index+0] & 0xff;
-      int gray2 =  buffer_cpy_[byte_index+1] & 0xff;
-      byte_index += 2;
-      int tmp = (gray2 << 8) | (gray1 << 0);
-      int gray = (int) KinectUtilitys.map(tmp, 0, 65536, 0, 255);
+      byte_index = i*2;
+      gray1 =  buffer_cpy_[byte_index+0] & 0xFF;
+      gray2 =  buffer_cpy_[byte_index+1] & 0xFF;
+      tmp = (gray2 << 8) | gray1;
+      gray = (int) KinectUtilitys.map(tmp, 0, 65536, 0, 255);
   //    int gray = tmp > 255 ? 255 : tmp;
   //    byte_index += 2;
-      pixels_colors_tmp[i] = (255 << 24) | (gray << 16) | (gray<< 8) | (gray << 0) ;
+      pixels_colors_tmp[i] = 0xFF000000| (gray << 16) | (gray<< 8) | gray;
   //    pixels_colors_tmp[i] = tmp ;
     }
   }

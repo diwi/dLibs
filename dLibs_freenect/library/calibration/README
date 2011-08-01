@@ -11,13 +11,6 @@ Kinect Calibration: WINDOWS
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-get calibration-app from here:
-
-http://nicolas.burrus.name/index.php/Research/Kinect
-http://nicolas.burrus.name/index.php/Research/KinectCalibration
-http://nicolas.burrus.name/index.php/Research/KinectRgbDemoV4
-
-
 Instructions: thomas diewald:
 1) start: rgbd-viewer.exe
     1.2) Menue -> Capture  -> Dual RGB/IR mode

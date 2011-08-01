@@ -1,3 +1,25 @@
+/**
+ * dLibs.freenect - Kinect Java/Processing Library.
+ * 
+ * Copyright (c) 2011 Thomas Diewald
+ *
+ *
+ * This source is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 package dLibs.freenect;
 
 import dLibs.freenect.constants.DEPTH_FORMAT;
@@ -14,8 +36,8 @@ import dLibs.freenect.toolbox.KinectVector3D;
 
 
 public class Kinect3D extends ConnectionManager implements Threadable, Pixelable{
-  private float   actual_framerate_  = 60.0f;
-  private float   forced_framerate_  = 60.0f;
+  private float   actual_framerate_  = 30.0f;
+  private float   forced_framerate_  = 30.0f;
   private boolean active_            = false;
   
   private KinectThread3D kinect_thread_3d_ = new KinectThread3D();
@@ -177,7 +199,8 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
     KinectFrameVideo video_frame = getVideoFrame();
     
     // check if an Instance of KinectFrameDepth is connected to the current device
-    if( depth_frame == null) return;
+    if( depth_frame == null) 
+      return;
 
     int index = -1;
     
@@ -191,7 +214,7 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
     int depth_pixels_raw[] = depth_frame.getRawDepth();
     
     
-    float video3d_x, video3d_y, video3d_z;
+    float video3d_x, video3d_y, video3d_z, video3d_z_inv;
     float depth3d_x, depth3d_y, depth3d_z;
     
     // check if an Instance of KinectFrameVideo is connected to the current device
@@ -200,12 +223,12 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
       video_can_be_mapped = ((VIDEO_FORMAT)video_frame.getFormat()).colorMapping();
     }
     
-    int default_color = ((255 << 24) | (200 << 16) | (200 << 8) | (200 << 0));
+    int default_color = (0xFF000000 | (200 << 16) | (200 << 8) | 200);
     
     
     
     // prepare a temp vector, to calculate the world-transformation
-    KinectVector3D camera_xyz_transformed_  = new KinectVector3D();
+    KinectVector3D camera_xyz_transformed_ = new KinectVector3D();
     // get world-transformation matrix
     KinectMatrix world_matrix = kinect_transformation_.getWorldMatrix();
     // trasform the cameras cone and origin
@@ -234,13 +257,16 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
 //    P3D' = R.P3D + T
 //    P2D_rgb.x = (P3D'.x * fx_rgb / P3D'.z) + cx_rgb
 //    P2D_rgb.y = (P3D'.y * fy_rgb / P3D'.z) + cy_rgb
-
+    
+    int index_mapped, mapped_color, row;
+    float fy_depth_inv = 1f/fy_depth;
+    float fx_depth_inv = 1f/fx_depth;
     for(int v = 0; v < cam_h_; v++){  
-      factor_y = (v - cy_depth)/ fy_depth;
-
+      factor_y = (v - cy_depth) * fy_depth_inv;
+      row = v*cam_w_;
       for(int u = 0; u < cam_w_; u++){
-        factor_x = (u - cx_depth)/ fx_depth;
-        index = v*cam_w_ + u;
+        factor_x = (u - cx_depth) * fx_depth_inv;
+        index = row + u;
 
         // calculate 3d coordinates (camera coordinate system)
         depth3d_z = (1f / (-0.003071f*depth_pixels_raw[index] + 3.330950f ));
@@ -269,14 +295,15 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
           video3d_z = video_matrix.m20 * depth3d_x  +  video_matrix.m21*depth3d_y  +  video_matrix.m22*depth3d_z  +  video_matrix.m23;
              
           // re-project the values to the video image
-          video2dmapped_x = KinectUtilitys.constrain((int) ( video3d_x * fx_video / video3d_z + cx_video),   0,   cam_w_-1);
-          video2dmapped_y = KinectUtilitys.constrain((int) ( video3d_y * fy_video / video3d_z + cy_video),   0,   cam_h_-1);
+          video3d_z_inv = 1f/video3d_z;
+          video2dmapped_x = KinectUtilitys.constrain((int) ( video3d_x * fx_video * video3d_z_inv + cx_video),   0,   cam_w_-1);
+          video2dmapped_y = KinectUtilitys.constrain((int) ( video3d_y * fy_video * video3d_z_inv + cy_video),   0,   cam_h_-1);
   
           // get the new index
-          int index_mapped = video2dmapped_y*cam_w_ + video2dmapped_x;
+          index_mapped = video2dmapped_y*cam_w_ + video2dmapped_x;
           // get the new color for the current index based on the new index
-          int mapped_color = video_pixels[ index_mapped];
-          
+          mapped_color = video_pixels[ index_mapped];
+  
           // save color to integer-array 
           pixels_colors_mapped_[index] = mapped_color;   
           // save color to KinectPoint3D-aray
@@ -293,7 +320,7 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
           }
         }
         
-        // transform cameraspace to worldspace
+        // transform camera-space to world-space
         camera_xyz_[index].z *= -1; // mirror z-direction
         world_matrix.mult(camera_xyz_[index], camera_xyz_transformed_);
 
