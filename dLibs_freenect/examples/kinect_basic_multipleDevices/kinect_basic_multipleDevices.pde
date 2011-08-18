@@ -78,7 +78,7 @@ void assignPixels(PImage img, Pixelable kinect_dev){
 
 //-------------------------------------------------------------------
 // this is maybe not necessary, but is the proper way to close everything
-void stop(){
+void dispose(){
   Kinect.shutDown(); 
-  super.stop();
+  super.dispose();
 }
