@@ -24,13 +24,13 @@ package dLibs.freenect.constants;
 
 public enum LIBRARY {
 
-    NAME    ("dLibs.my_kinect.*"),
-    VERSION ("00.00.200"),
+    NAME    ("dLibs.freenect.*"),
+    VERSION ("01.00"),
     AUTHOR  ("thomas diewald"),
     NOTE    
         (
         "requires openkinect driver (libfreenect.dll)"+
-        "\ntested on windows XP, x86 " +
+        "\ntested on winXP-x86/x64, win7-x86/x64 " +
         "\ntested with libfreenect: \"OpenKinect-libfreenect-3b0f416\""+
         "\nlibusb-win32 version 1.2.2.0"
   
