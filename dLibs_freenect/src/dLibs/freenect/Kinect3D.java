@@ -119,7 +119,7 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
     // set data for the camera cone
     camera_cone_.setCalibration(calibration);
   }
-  
+
   public final KinectCalibration getCalibration(){
     return this.calibration_data_;
   }
@@ -258,6 +258,8 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
 //    P2D_rgb.x = (P3D'.x * fx_rgb / P3D'.z) + cx_rgb
 //    P2D_rgb.y = (P3D'.y * fy_rgb / P3D'.z) + cy_rgb
     
+
+
     int index_mapped, mapped_color, row;
     float fy_depth_inv = 1f/fy_depth;
     float fx_depth_inv = 1f/fx_depth;
@@ -332,6 +334,36 @@ public class Kinect3D extends ConnectionManager implements Threadable, Pixelable
     } // end for v
   } // end  private final void process3D()
   
+  
+  /**
+   * transforms a pixel, depending on its depth-value (in centimeters), into the camera-space.<br>
+   * 
+   * @param pixel_location_x  x position of a pixel
+   * @param pixel_location_y  y position of a pixel
+   * @param depth_in_cm       distance from camera origin
+   * @return a KinectPoint3D
+   */
+  public  final KinectPoint3D getTransformedPixel(float pixel_location_x, float pixel_location_y, float depth_in_cm){
+    float factor_y = (pixel_location_y - cy_depth) / fy_depth;
+    float factor_x = (pixel_location_x - cx_depth) / fx_depth;
+    
+    float depth3d_z = depth_in_cm;
+    float depth3d_x = depth3d_z * factor_x;
+    float depth3d_y = depth3d_z * factor_y;
+    
+    KinectVector3D camera_xyz_transformed = new KinectVector3D();
+    KinectPoint3D kp3d = new KinectPoint3D(depth3d_x, depth3d_y, depth3d_z);
+    kp3d.z *= -1;
+    
+    KinectMatrix world_matrix = kinect_transformation_.getWorldMatrix();
+    world_matrix.mult(kp3d, camera_xyz_transformed);
+    
+    kp3d.x = camera_xyz_transformed.x ;
+    kp3d.y = camera_xyz_transformed.y ;
+    kp3d.z = camera_xyz_transformed.z ;
+    
+    return kp3d;
+  }
   
 
   
