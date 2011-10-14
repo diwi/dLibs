@@ -29,4 +29,6 @@ public interface FrameFormat {
   int getWidth();
   int getHeight();
   int getBytesPerPixel();
+  int nativeFrameModeIndex();
+  int nativeFramerate();
 }

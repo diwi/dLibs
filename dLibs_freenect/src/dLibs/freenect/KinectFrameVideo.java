@@ -30,6 +30,7 @@ import dLibs.freenect.toolbox.CallbackHandler.VideoCB;
 
 public class KinectFrameVideo extends KinectFrame{
 //  KinectFrameVideo current_videoframe_ = this;
+  
   //----------------------------------------------------------------------------
   // CONSTRUCTOR
   public KinectFrameVideo(VIDEO_FORMAT format){  
@@ -78,47 +79,99 @@ public class KinectFrameVideo extends KinectFrame{
   protected final void frame_RGB_(){
     int byte_index = 0;  
     int r, g, b;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       byte_index = i*3;
       r =  buffer_cpy_[byte_index  ] & 0xFF;
       g =  buffer_cpy_[byte_index+1] & 0xFF;
       b =  buffer_cpy_[byte_index+2] & 0xFF;
-      pixels_colors_tmp[i] = 0xFF000000 | (r << 16) | (g << 8) | b  ;
+      pixels_colors_tmp_[i] = 0xFF000000 | (r << 16) | (g << 8) | b  ;
     }
   }
   
   // _BAYER_ //-----------------------------------------------------------------
   protected final void frame_BAYER_(){ 
     int gray;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       gray =  buffer_cpy_[i] & 0xFF;
-      pixels_colors_tmp[i] = 0xFF000000 | (gray << 16) | (gray << 8) | gray ;
+      pixels_colors_tmp_[i] = 0xFF000000 | (gray << 16) | (gray << 8) | gray ;
+//      pixels_colors_tmp_[i] = 0xFF000000;
     }
+    
+    
+
+    
+    // bayer to RGB conversion - strange behaviour
+    /*
+    int w = format_.getWidth();
+    int h = format_.getHeight();
+    
+    // G  - B
+    // |    |
+    // R  - G
+    //
+    // 00 - 10
+    // |     |
+    // 01 - 11
+    int r,g,b;
+    for(int y = 1; y < h-1; y++, y++){
+      for(int x = 1; x < w-1; x++, x++){
+        int idx_00 = x+y*w;
+        int idx_10 = idx_00 + 1;
+        int idx_01 = idx_00 + w;
+        int idx_11 = idx_00 + w + 1;
+        
+        // case 00  -  G
+        r = (buffer_cpy_[idx_00-w]&0xFF  + buffer_cpy_[idx_00+w]&0xFF   )>>1;
+        g =  buffer_cpy_[idx_00]&0xFF ;
+        b = (buffer_cpy_[idx_00-1]&0xFF  + buffer_cpy_[idx_00+1]&0xFF   )>>1; 
+//        r&= 0xFF; g&= 0xFF; b&= 0xFF; 
+        pixels_colors_tmp_[idx_00] = 0xFF000000 | (r << 16) | (g << 8) | b ;
+      
+        
+        // case 11  -  G
+        r = (buffer_cpy_[idx_11-1]&0xFF   + buffer_cpy_[idx_11+1]&0xFF   )>>1; 
+        g =  buffer_cpy_[idx_11]&0xFF  ;
+        b = (buffer_cpy_[idx_11-w]&0xFF   + buffer_cpy_[idx_11+w]&0xFF   )>>1;
+//        r&= 0xFF; g&= 0xFF; b&= 0xFF;
+        pixels_colors_tmp_[idx_11] = 0xFF000000 | (r << 16) | (g << 8) | b ;
+        
+        
+//        // case 10
+        r = (buffer_cpy_[idx_10-1-w]&0xFF +buffer_cpy_[idx_10+1-w]&0xFF +buffer_cpy_[idx_10-1+w]&0xFF +buffer_cpy_[idx_10+1+w]&0xFF ) >>2;
+        g = (buffer_cpy_[idx_10-1]  &0xFF +buffer_cpy_[idx_10+1]  &0xFF +buffer_cpy_[idx_10-w]  &0xFF +buffer_cpy_[idx_10+w]  &0xFF ) >>2;
+        b =  buffer_cpy_[idx_10]    &0xFF ; 
+//        r&= 0xFF; g&= 0xFF; b&= 0xFF; 
+        pixels_colors_tmp_[idx_10] = 0xFF000000 | (r << 16) | (g << 8) | b ;
+        
+//        // case 01
+        r =  buffer_cpy_[idx_01]&0xFF ; 
+        g = (buffer_cpy_[idx_01-1]  &0xFF +buffer_cpy_[idx_01+1]  &0xFF +buffer_cpy_[idx_01-w]  &0xFF +buffer_cpy_[idx_01+w]  &0xFF ) >>2;
+        b = (buffer_cpy_[idx_01-1-w]&0xFF +buffer_cpy_[idx_01+1-w]&0xFF +buffer_cpy_[idx_01-1+w]&0xFF +buffer_cpy_[idx_01+1+w]&0xFF ) >>2;
+//        r&= 0xFF; g&= 0xFF; b&= 0xFF; 
+        pixels_colors_tmp_[idx_01] = 0xFF000000 | (r << 16) | (g << 8) | b ;       
+      }
+    }
+    */
   }
   
   // _IR_8BIT_ //---------------------------------------------------------------
   protected final void frame_IR_8BIT_(){ 
     int gray;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       gray =  buffer_cpy_[i] & 0xFF;
-      pixels_colors_tmp[i] = 0xFF000000| (gray << 16) | (gray << 8) | gray ;
+      pixels_colors_tmp_[i] = 0xFF000000| (gray << 16) | (gray << 8) | gray ;
     }
   }
   
   // _IR_10BIT_ //--------------------------------------------------------------
   protected final void frame_IR_10BIT_(){ 
     int byte_index = 0;   
-    int gray1, gray2, tmp;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    int val1, val2 ;
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       byte_index = i*2;
-      gray1 =  buffer_cpy_[byte_index  ] & 0xFF;
-      gray2 =  buffer_cpy_[byte_index+1] & 0xFF;
-      tmp = 0xFF000000 | (0 << 16) | (gray2 << 8) | gray1;
-  //    int gray = (int) (tmp/2f);
-  //    int gray = tmp > 255 ? 255 : tmp;
-  //    byte_index += 2;
-  //    pixels_colors_tmp[i] = (gray << 16) | (gray<< 8) | (gray << 0) ;
-      pixels_colors_tmp[i] = tmp ;
+      val1 =  buffer_cpy_[byte_index  ] & 0xFF;
+      val2 =  buffer_cpy_[byte_index+1] & 0xFF;
+      pixels_colors_tmp_[i] = 0xFF000000 |  (val2 << 8) | val1; 
     }
   }
   
@@ -126,12 +179,12 @@ public class KinectFrameVideo extends KinectFrame{
   protected final void frame_YUV_RGB_(){ 
     int byte_index = 0;     
     int r, g, b;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       byte_index = i*3;
       r =  buffer_cpy_[byte_index  ] & 255;
       g =  buffer_cpy_[byte_index+1] & 255;
       b =  buffer_cpy_[byte_index+2] & 255;
-      pixels_colors_tmp[i] = 0xFF000000 | (r << 16) | (g << 8) | b ;
+      pixels_colors_tmp_[i] = 0xFF000000 | (r << 16) | (g << 8) | b ;
     }
   }
   
@@ -139,7 +192,7 @@ public class KinectFrameVideo extends KinectFrame{
   protected final void frame_YUV_RAW_(){ 
     int byte_index = 0;    
     int gray, gray1, gray2, tmp;
-    for(int i = 0; i < pixels_colors_tmp.length; i++){
+    for(int i = 0; i < pixels_colors_tmp_.length; i++){
       byte_index = i*2;
       gray1 =  buffer_cpy_[byte_index+0] & 0xFF;
       gray2 =  buffer_cpy_[byte_index+1] & 0xFF;
@@ -147,12 +200,9 @@ public class KinectFrameVideo extends KinectFrame{
       gray = (int) KinectUtilitys.map(tmp, 0, 65536, 0, 255);
   //    int gray = tmp > 255 ? 255 : tmp;
   //    byte_index += 2;
-      pixels_colors_tmp[i] = 0xFF000000| (gray << 16) | (gray<< 8) | gray;
+      pixels_colors_tmp_[i] = 0xFF000000| (gray << 16) | (gray<< 8) | gray;
   //    pixels_colors_tmp[i] = tmp ;
     }
   }
-  
-  
-  
-  
+
 }

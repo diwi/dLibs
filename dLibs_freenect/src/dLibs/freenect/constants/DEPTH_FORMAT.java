@@ -25,28 +25,28 @@ package dLibs.freenect.constants;
 import dLibs.freenect.interfaces.FrameFormat;
 
 public enum DEPTH_FORMAT implements FrameFormat{
-  _11BIT_  ( 0, DEPTH_FORMAT.FRAME_W_,    DEPTH_FORMAT.FRAME_H_,    2 ),    
-  _10BIT_  ( 1, DEPTH_FORMAT.FRAME_W_,    DEPTH_FORMAT.FRAME_H_,    2 ),  
+  _11BIT_  ( 0, DEPTH_FORMAT.VGA_FRAME_W_,    DEPTH_FORMAT.VGA_FRAME_H_,    2, 0, 30 ),    
+//  _10BIT_  ( 1, DEPTH_FORMAT.VGA_FRAME_W_,    DEPTH_FORMAT.VGA_FRAME_H_,    2, 1, 30  ),  
   ;
   
- 
-  
-  private static final int FRAME_W_      = 640;
-  private static final int FRAME_H_      = 480;
+  private static final int VGA_FRAME_W_      = 640;
+  private static final int VGA_FRAME_H_      = 480;
 
-  //private static final int IR_FRAME_W_   = 640;
-  //private static final int IR_FRAME_H_   = 488;
   private final int value_;
   private final int buffer_;
   private final int width_;
   private final int height_;
   private final int bytes_per_pixel;
-  private DEPTH_FORMAT(int value, int width, int height, int bytes_per_pixel) {
+  private final int native_framemode_idx_;
+  private final int native_framerate_;
+  private DEPTH_FORMAT(int value, int width, int height, int bytes_per_pixel, int native_framemode_idx, int native_framerate ) {
     this.value_          = value;
     this.width_          = width;
     this.height_         = height;
     this.bytes_per_pixel = bytes_per_pixel;
     this.buffer_ = this.width_*this.height_*this.bytes_per_pixel;
+    this.native_framemode_idx_ = native_framemode_idx;
+    this.native_framerate_ = native_framerate;
   }
   @Override
   public final int getValue(){
@@ -63,6 +63,12 @@ public enum DEPTH_FORMAT implements FrameFormat{
   }
   public final int getBytesPerPixel(){
     return bytes_per_pixel;
+  }
+  public final int nativeFrameModeIndex(){
+    return this.native_framemode_idx_;
+  }
+  public final int nativeFramerate(){
+    return this.native_framerate_;
   }
 
 }

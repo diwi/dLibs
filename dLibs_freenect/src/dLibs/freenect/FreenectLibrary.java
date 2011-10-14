@@ -32,6 +32,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
 
 
@@ -116,8 +117,25 @@ final class FreenectLibrary{
 //    abstract Pointer   freenect_get_user           ( KinectDevice dev );
 //    abstract void      freenect_set_user           ( KinectDevice dev, Pointer user );
 
-    abstract int       freenect_set_depth_format   ( KinectDevice dev, int i );
-    abstract int       freenect_set_video_format   ( KinectDevice dev, int i );
+    
+//    abstract int       freenect_set_depth_format   ( KinectDevice dev, int i ); // deprecated
+//    abstract int       freenect_set_video_format   ( KinectDevice dev, int i ); // deprecated
+    
+    abstract int               freenect_get_video_mode_count();
+    abstract KinectFrameMode   freenect_get_video_mode  (int mode_num);
+    abstract KinectFrameMode   freenect_get_current_video_mode( KinectDevice dev);
+    abstract KinectFrameMode   freenect_find_video_mode(int res, int fmt);
+    abstract int               freenect_set_video_mode (KinectDevice  dev, KinectFrameMode mode);
+    
+    abstract int               freenect_get_depth_mode_count();
+    abstract KinectFrameMode   freenect_get_depth_mode  (int mode_num);
+    abstract KinectFrameMode   freenect_get_current_depth_mode( KinectDevice dev);
+    abstract KinectFrameMode   freenect_find_depth_mode(int res, int fmt);
+    abstract int               freenect_set_depth_mode (KinectDevice  dev, KinectFrameMode mode);
+    
+    
+    
+    
     abstract int       freenect_set_depth_buffer   ( KinectDevice dev, ByteBuffer depth_buffer );
     abstract int       freenect_set_video_buffer   ( KinectDevice dev, ByteBuffer video_buffer );
     
@@ -164,5 +182,29 @@ final class FreenectLibrary{
     protected KinectDevice( Pointer ptr){
       super(ptr);
     }
+  }
+  ////----------------------------------------------------------------------------
+  ////---------------------- CLASS KINECT FRAME MODE -----------------------------
+  ////----------------------------------------------------------------------------
+
+  
+  
+  
+  public static class KinectFrameMode extends Structure implements Structure.ByValue{
+    public int   reserved;                /**< unique ID used internally.  The meaning of values may change without notice.  Don't touch or depend on the contents of this field.  We mean it. */
+    public int   resolution;              /**< Resolution this freenect_frame_mode describes, should you want to find it again with freenect_find_*_frame_mode(). */
+    public int   format;
+//    union {
+//      int32_t dummy;
+//      freenect_video_format video_format;
+//      freenect_depth_format depth_format;
+//    };                                /**< The video or depth format that this freenect_frame_mode describes.  The caller should know which of video_format or depth_format to use, since they called freenect_get_*_frame_mode() */
+    public int   bytes;                    /**< Total buffer size in bytes to hold a single frame of data.  Should be equivalent to width * height * (data_bits_per_pixel+padding_bits_per_pixel) / 8 */
+    public short width;                  /**< Width of the frame, in pixels */
+    public short height;                 /**< Height of the frame, in pixels */
+    public byte  data_bits_per_pixel;     /**< Number of bits of information needed for each pixel */
+    public byte  padding_bits_per_pixel;  /**< Number of bits of padding for alignment used for each pixel */
+    public byte  framerate;               /**< Approximate expected frame rate, in Hz */
+    public byte  is_valid;                /**< If 0, this freenect_frame_mode is invalid and does not describe a supported mode.  Otherwise, the frame_mode is valid. */
   }
 }

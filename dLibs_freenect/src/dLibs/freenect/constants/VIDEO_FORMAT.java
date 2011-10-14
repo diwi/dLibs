@@ -25,16 +25,15 @@ package dLibs.freenect.constants;
 import dLibs.freenect.interfaces.FrameFormat;
 
 public enum VIDEO_FORMAT implements FrameFormat{
-  _RGB_             ( 0, VIDEO_FORMAT.FRAME_W_,    VIDEO_FORMAT.FRAME_H_,    3, true  ),    
-  _BAYER_           ( 1, VIDEO_FORMAT.FRAME_W_,    VIDEO_FORMAT.FRAME_H_,    1, true  ),      
-  _IR_8BIT_         ( 2, VIDEO_FORMAT.IR_FRAME_W_, VIDEO_FORMAT.IR_FRAME_H_, 1, false ),      
-  _IR_10BIT_        ( 3, VIDEO_FORMAT.IR_FRAME_W_, VIDEO_FORMAT.IR_FRAME_H_, 2, false ),  
-  _YUV_RGB_         ( 5, VIDEO_FORMAT.FRAME_W_,    VIDEO_FORMAT.FRAME_H_,    3, true  ),   
-  _YUV_RAW_         ( 6, VIDEO_FORMAT.FRAME_W_,    VIDEO_FORMAT.FRAME_H_,    2, true  ), 
-  
+  _RGB_             ( 0, VIDEO_FORMAT.VGA_FRAME_W_,    VIDEO_FORMAT.VGA_FRAME_H_,    3, true ,    1 , 30),    
+  _BAYER_           ( 1, VIDEO_FORMAT.VGA_FRAME_W_,    VIDEO_FORMAT.VGA_FRAME_H_,    1, true ,    3 , 30),      
+  _IR_8BIT_         ( 2, VIDEO_FORMAT.IR_FRAME_W_ ,    VIDEO_FORMAT.IR_FRAME_H_ ,    1, false,    5 , 30),      
+  _IR_10BIT_        ( 3, VIDEO_FORMAT.IR_FRAME_W_ ,    VIDEO_FORMAT.IR_FRAME_H_ ,    2, false,    7 , 15),  
+  _YUV_RGB_         ( 5, VIDEO_FORMAT.VGA_FRAME_W_,    VIDEO_FORMAT.VGA_FRAME_H_,    3, true ,    10, 15),   
+  _YUV_RAW_         ( 6, VIDEO_FORMAT.VGA_FRAME_W_,    VIDEO_FORMAT.VGA_FRAME_H_,    2, true ,    11, 15), 
   ;
-  private static final int FRAME_W_      = 640;
-  private static final int FRAME_H_      = 480;
+  private static final int VGA_FRAME_W_      = 640;
+  private static final int VGA_FRAME_H_      = 480;
 
   private static final int IR_FRAME_W_   = 640;
   private static final int IR_FRAME_H_   = 488;
@@ -44,13 +43,18 @@ public enum VIDEO_FORMAT implements FrameFormat{
   private final int     height_;
   private final int     bytes_per_pixel_;
   private final boolean color_mapping_;
-  private VIDEO_FORMAT(int value, int width, int height, int bytes_per_pixel, boolean color_mapping) {
+  private final int     native_framemode_idx_;
+  private final int     native_framerate_;
+  
+  private VIDEO_FORMAT(int value, int width, int height, int bytes_per_pixel, boolean color_mapping, int native_framemode_idx, int native_framerate) {
     this.value_           = value;
     this.width_           = width;
     this.height_          = height;
     this.bytes_per_pixel_ = bytes_per_pixel;
     this.color_mapping_   = color_mapping;
-    this.buffer_ = this.width_*this.height_*this.bytes_per_pixel_;
+    this.buffer_ = this.width_ * this.height_ * this.bytes_per_pixel_;
+    this.native_framemode_idx_ = native_framemode_idx;
+    this.native_framerate_ = native_framerate;
   }
   public final int getValue(){
     return this.value_;
@@ -69,5 +73,11 @@ public enum VIDEO_FORMAT implements FrameFormat{
   }
   public final boolean colorMapping(){
     return this.color_mapping_;
+  }
+  public final int nativeFrameModeIndex(){
+    return this.native_framemode_idx_;
+  }
+  public final int nativeFramerate(){
+    return this.native_framerate_;
   }
 }

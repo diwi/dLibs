@@ -40,21 +40,26 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
   
   protected final ByteBuffer  byte_buffer_    ;
   protected final int         pixels_colors_[]; 
-  protected final int         pixels_colors_tmp[];
+  protected final int         pixels_colors_tmp_[];
   protected final byte        buffer_cpy_[];   
   protected final FrameFormat format_;
   protected final FrameThread frame_thread_ = new FrameThread();
   
   protected Callback frame_callback_;
-
+  
+//  protected final FRAME_RESOLUTION resolution_ = FRAME_RESOLUTION._VGA_;
+  
   // CONSTRUCTOR
   protected KinectFrame(FrameFormat format){
-    this.format_      = format;
-    byte_buffer_      = ByteBuffer.allocateDirect(this.format_.getBufferSize());
-    pixels_colors_    = new int [this.format_.getWidth() * this.format_.getHeight()];
-    pixels_colors_tmp = new int [this.format_.getWidth() * this.format_.getHeight()];
-    buffer_cpy_       = new byte[this.format_.getBufferSize()];
-    active            = false; 
+    format_            = format;
+    byte_buffer_       = ByteBuffer.allocateDirect(this.format_.getBufferSize());
+    pixels_colors_     = new int [this.format_.getWidth() * this.format_.getHeight()];
+    pixels_colors_tmp_ = new int [this.format_.getWidth() * this.format_.getHeight()];
+    buffer_cpy_        = new byte[this.format_.getBufferSize()];
+    active             = false; 
+    
+    actual_framerate_ = format.nativeFramerate();
+    forced_framerate_ = format.nativeFramerate();
   }
   
   
@@ -202,7 +207,7 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
   
   protected void copyPixels(){
     synchronized (pixels_colors_){
-      System.arraycopy(pixels_colors_tmp, 0, pixels_colors_, 0, pixels_colors_.length);
+      System.arraycopy(pixels_colors_tmp_, 0, pixels_colors_, 0, pixels_colors_.length);
     }
   }
   

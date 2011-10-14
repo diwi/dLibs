@@ -273,8 +273,8 @@ public class Kinect implements Logable{
 
     public final void run(){
       int count = 0;
-
-      System.out.println( ">>> thread processeEvents started on kinect: " + getIndex()  );
+      KinectLogger.log(KinectLogger.TYPE.INFO, core_, "STARTED Thread: processeEvents(...)");
+//      System.out.println( ">>> thread processeEvents started on kinect: " + getIndex()  );
       while( active_ ){     
         updateEvents();
         Thread.yield();

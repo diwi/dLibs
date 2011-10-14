@@ -31,6 +31,7 @@ import com.sun.jna.ptr.PointerByReference;
 
 import dLibs.freenect.FreenectLibrary.KinectContext;
 import dLibs.freenect.FreenectLibrary.KinectDevice;
+import dLibs.freenect.FreenectLibrary.KinectFrameMode;
 import dLibs.freenect.FreenectLibrary.TiltState;
 import dLibs.freenect.constants.DEPTH_FORMAT;
 import dLibs.freenect.constants.LED_STATUS;
@@ -220,16 +221,9 @@ class KinectCore {
   
   
   
+
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   
   
   
@@ -279,13 +273,35 @@ class KinectCore {
    * 
    * return void
    */
-  protected static final void setDepthFormat( Coreable core, DEPTH_FORMAT format){
+  protected static final void setDepthFormat( Coreable core, FrameFormat format){
     if( !hasDevice(core) ) {
       KinectLogger.log(KinectLogger.TYPE.WARNING, core, "FAILED: set depth format", "no device opened");
       return;
     }
-    int rval = FreenectLibrary.get().freenect_set_depth_format (core.getDevice(), format.getValue());
-    if (rval != 0) 
+
+//    System.out.println("-------------------------------");
+//    System.out.println("--------      DEPTH -----------");
+//    System.out.println("-------------------------------");
+//    for(int i = 0; i < count; i++){
+//      frame_mode = FreenectLibrary.get().freenect_get_depth_mode(i);
+//      System.out.println("-------------------------------");
+//      System.out.println("frame_mode: "+i              );
+//      System.out.println("frame_mode.reserved;              = "+frame_mode.reserved              );
+//      System.out.println("frame_mode.resolution;            = "+frame_mode.resolution            );
+//      System.out.println("frame_mode.format;                = "+frame_mode.format                );
+//      System.out.println("frame_mode.bytes;                 = "+frame_mode.bytes                 );
+//      System.out.println("frame_mode.width;                 = "+frame_mode.width                 );
+//      System.out.println("frame_mode.height;                = "+frame_mode.height                );
+//      System.out.println("frame_mode.data_bits_per_pixel;   = "+frame_mode.data_bits_per_pixel   );
+//      System.out.println("frame_mode.padding_bits_per_pixel = "+frame_mode.padding_bits_per_pixel);
+//      System.out.println("frame_mode.framerate;             = "+frame_mode.framerate             );
+//      System.out.println("frame_mode.is_valid;              = "+frame_mode.is_valid              );
+//      System.out.println("-------------------------------");
+//    }  
+    KinectFrameMode frame_mode = FreenectLibrary.get().freenect_get_depth_mode(format.nativeFrameModeIndex());
+    int rval = FreenectLibrary.get().freenect_set_depth_mode (core.getDevice(), frame_mode);
+
+    if (rval < 0) 
       KinectLogger.log(KinectLogger.TYPE.ERROR, core, "FAILED: set depth format", "native call returned: "+rval);
   }
   /*----------------------------------------------------------------------------
@@ -293,13 +309,34 @@ class KinectCore {
    * 
    * return void
    */
-  protected static final void setVideoFormat( Coreable core, VIDEO_FORMAT format){
+  protected static final void setVideoFormat( Coreable core, FrameFormat format){
     if( !hasDevice(core) ) {
       KinectLogger.log(KinectLogger.TYPE.WARNING, core, "FAILED: set video format", "no device opened");
       return;
     }
-    int rval = FreenectLibrary.get().freenect_set_video_format (core.getDevice(), format.getValue());
-    if (rval != 0) 
+
+//    System.out.println("-------------------------------");
+//    System.out.println("--------      VIDEO -----------");
+//    System.out.println("-------------------------------");
+//    for(int i = 0; i < count; i++){
+//      frame_mode = FreenectLibrary.get().freenect_get_video_mode(i);
+//      System.out.println("-------------------------------");
+//      System.out.println("frame_mode: "+i              );
+//      System.out.println("frame_mode.reserved;              = "+frame_mode.reserved              );
+//      System.out.println("frame_mode.resolution;            = "+frame_mode.resolution            );
+//      System.out.println("frame_mode.format;                = "+frame_mode.format                );
+//      System.out.println("frame_mode.bytes;                 = "+frame_mode.bytes                 );
+//      System.out.println("frame_mode.width;                 = "+frame_mode.width                 );
+//      System.out.println("frame_mode.height;                = "+frame_mode.height                );
+//      System.out.println("frame_mode.data_bits_per_pixel;   = "+frame_mode.data_bits_per_pixel   );
+//      System.out.println("frame_mode.padding_bits_per_pixel = "+frame_mode.padding_bits_per_pixel);
+//      System.out.println("frame_mode.framerate;             = "+frame_mode.framerate             );
+//      System.out.println("frame_mode.is_valid;              = "+frame_mode.is_valid              );
+//      System.out.println("-------------------------------");
+//    }
+    KinectFrameMode frame_mode = FreenectLibrary.get().freenect_get_video_mode(format.nativeFrameModeIndex());
+    int rval = FreenectLibrary.get().freenect_set_video_mode (core.getDevice(), frame_mode);
+    if (rval < 0) 
       KinectLogger.log(KinectLogger.TYPE.ERROR, core, "FAILED: set video format", "native call returned: "+rval);
   }
   
