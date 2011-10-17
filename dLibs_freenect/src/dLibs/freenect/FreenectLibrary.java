@@ -42,7 +42,8 @@ import dLibs.freenect.toolbox.KinectLogger;
 
 final class FreenectLibrary{
   
-  private static String dll_name_ = "freenect.dll";
+  private static String dll_name_x86_ = "freenect_x86.dll";
+  private static String dll_name_x64_ = "freenect_x64.dll";
   private static String dll_path_ = "";
   
   private static Libfreenect LIBFREENECT_ = null;
@@ -54,7 +55,9 @@ final class FreenectLibrary{
       URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
       dll_path_ = new File(uri_.getPath()).getParent() + "/libfreenect/";
     } catch (URISyntaxException e) {}
-    loadLibrary(dll_path_, dll_name_); 
+    
+    boolean is_x86 = System.getProperty("os.arch").contains("86");
+    loadLibrary(dll_path_, is_x86 ? dll_name_x86_ : dll_name_x64_); 
   }
 
   // CONSTRUCTOR

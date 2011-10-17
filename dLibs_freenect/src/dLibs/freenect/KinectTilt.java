@@ -157,7 +157,7 @@ public class KinectTilt extends ConnectionManager{
   private final class TiltThread implements Runnable{
     private boolean active_    = true;
     private boolean is_running = false;
-    
+    private Thread thread_;
     public TiltThread(){} 
     
     public final boolean isRunning(){
@@ -166,11 +166,18 @@ public class KinectTilt extends ConnectionManager{
     public final void startThread(){
       active_    = true;
       is_running = true;
-      new Thread(this).start();
+      thread_ = new Thread(this);
+      thread_.start();
     }
     public final void stopThread(){
       this.active_ = false;
-      while(is_running);    
+      if( thread_ != null ){
+        try {
+          thread_.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }  
+      }
     }
     
     public void run(){

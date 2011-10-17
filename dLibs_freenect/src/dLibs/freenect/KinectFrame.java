@@ -134,6 +134,7 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
       active = true;
     } else
       active = false;
+    //super.isConnected().updateEvents();
   }
   
   //----------------------------------------------------------------------------
@@ -141,6 +142,7 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
   @Override
   public final void stop() {
     if( active ){
+      active = true;
       frame_thread_.stopThread();
       KinectCore.stopFrame(super.getCore(), this.format_);
       active = false;
@@ -152,9 +154,10 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
   //---------------------------------------------------------------------------
   private final class FrameThread implements Runnable{
     private boolean active_     = true;
-    private boolean is_running_  = false;
+//    private boolean is_running_  = false;
     private long    framerate_last_nanos_get_framerate_ = 1;
     private long    framerate_last_nanos_set_framerate_ = 1;
+    private Thread  thread_;
     
     public FrameThread(){} 
     
@@ -163,12 +166,19 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
 //    }
     public final void startThread(){
       active_    = true;
-      is_running_ = true;
-      new Thread(this).start();
+//      is_running_ = true;
+      thread_ = new Thread(this);
+      thread_.start();
     }
     public final void stopThread(){
       this.active_ = false;
-      while(is_running_);    
+      if( thread_ != null ){
+        try {
+          thread_.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }  
+      }
     }   
     public void getFrameRate(){
       long now = System.nanoTime();
@@ -195,7 +205,7 @@ abstract class KinectFrame extends ConnectionManager implements Threadable, Pixe
         copyPixels();
         Thread.yield();
       }
-      is_running_ = false;
+//      is_running_ = false;
     } // end run
   } // end private class TiltThread implements Runnable{
   //---------------------------------------------------------------------------

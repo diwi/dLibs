@@ -160,19 +160,26 @@ public class KinectLed extends ConnectionManager{
   // LED THREAD
   private final class LedThread implements Runnable{
     private boolean active_    = true;
-    private boolean is_running = false;
+//    private boolean is_running = false;
     private long time_mark = 0;
-    
+    private Thread thread_;
     public LedThread(){} 
     
     public final void startThread(){
       active_    = true;
-      is_running = true;
-      new Thread(this).start();
+//      is_running = true;
+      thread_ = new Thread(this);
+      thread_.start();
     }
     public final void stopThread(){
       this.active_ = false;
-      while(is_running);    
+      if( thread_ != null ){
+        try {
+          thread_.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }  
+      }
     }
     
     public final void run(){
@@ -185,7 +192,7 @@ public class KinectLed extends ConnectionManager{
         Thread.yield();
         try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace();}
       }
-      is_running = false;
+//      is_running = false;
     } // end run
     
     private final void manageLedStatusLed(){

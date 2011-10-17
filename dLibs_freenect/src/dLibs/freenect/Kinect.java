@@ -255,20 +255,26 @@ public class Kinect implements Logable{
   
   private final class EventThread implements Runnable{
     private boolean active_   = true;
-    private boolean is_running = false;
+//    private boolean is_running = false;
     
     public EventThread(){} 
-    
+    public Thread thread_;
     public final void startThread(){
       active_ = true;
-      is_running = true;
-      Thread th = new Thread(this);
-      th.start();
+//      is_running = true;
+      thread_ = new Thread(this);
+      thread_.start();
 
     } 
     public final void stopThread(){
-      this.active_ = false;
-      while(is_running);    
+      this.active_ = false; 
+      if( thread_ != null ){
+        try {
+          thread_.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }  
+      }
     }
 
     public final void run(){
@@ -284,7 +290,7 @@ public class Kinect implements Logable{
           active_ = false;
       }
 //      System.out.println( "<<< thread processeEvents stopped"  );
-      is_running = false;
+//      is_running = false;
     } // end run
   } // class EventThread implements Runnable
   
