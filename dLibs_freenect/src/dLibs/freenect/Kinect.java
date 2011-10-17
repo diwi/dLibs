@@ -23,6 +23,8 @@
 package dLibs.freenect;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import dLibs.freenect.KinectCore.Core;
 import dLibs.freenect.KinectCore.KinectCounter;
@@ -302,6 +304,18 @@ public class Kinect implements Logable{
   
   
   
+  public static final void printOsSystemProperties(){
+    // Get all system properties
+    Properties props = System.getProperties();
+    // Enumerate all system properties
+    Enumeration<?> e = props.propertyNames();
+    for (; e.hasMoreElements(); ) {
+      String propName = (String)e.nextElement();
+      String propValue = (String)props.get(propName);
+       System.out.println(propName+"="+propValue);
+    }
+  }
+  
   
   
   
@@ -321,6 +335,8 @@ public class Kinect implements Logable{
     String note  = String.format("%6s",   (KinectCore.hasDevice(this.core_)) ? "active":"");
     return "("+name+ " . index:" + index+" . "+code+" . "+note+")";
   }
+  
+  
 
   
 }
