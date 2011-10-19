@@ -79,13 +79,14 @@ final class FreenectLibrary{
   }
   
   private static final String getFreenectForWindows(){
+    String path = "";
     try {
       URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
       jar_path_ = new File(uri_.getPath()).getParent();
-    } catch (URISyntaxException e) {}
-    
-    String path;
-    
+    } catch (URISyntaxException e) {
+      return path;
+    }
+     
     // case 1: default freenect.dll path
     path = jar_path_ + "/windows" + System.getProperty("sun.arch.data.model") + "/";
     if( new File(path + freenect_windows_).exists() ) return path;
@@ -98,7 +99,7 @@ final class FreenectLibrary{
     path = new File(jar_path_).getParentFile().getPath() + "/";
     if( new File(path + freenect_windows_).exists() ) return path;
     
-    return "";
+    return path;
   }
   
   

@@ -53,8 +53,8 @@ public class Kinect implements Logable{
     return KinectCounter.count();
   }
   // LOAD LIBRARY
-  public static final void loadLibrary(  String dll_path , String dll_name ) {
-    FreenectLibrary.loadLibrary(dll_path, dll_name); 
+  public static final void loadLibrary( String freenect_path , String freenect_name ) {
+    FreenectLibrary.loadLibrary(freenect_path, freenect_name); 
   }
   
 //------------------------------------------------------------------------------
