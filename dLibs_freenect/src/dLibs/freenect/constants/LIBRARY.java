@@ -25,7 +25,7 @@ package dLibs.freenect.constants;
 public enum LIBRARY {
 
   NAME    ("dLibs.freenect.*"),
-  VERSION ("02.14"),
+  VERSION ("02.20"),
   AUTHOR  ("thomas diewald"),
   NOTE    
       (

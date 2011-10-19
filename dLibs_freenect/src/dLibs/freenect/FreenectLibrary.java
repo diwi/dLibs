@@ -35,7 +35,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
-
+import com.sun.jna.Platform;
 
 import dLibs.freenect.constants.LIBRARY;
 import dLibs.freenect.toolbox.CallbackHandler;
@@ -43,33 +43,44 @@ import dLibs.freenect.toolbox.KinectLogger;
 
 final class FreenectLibrary{
   
-  private static String dll_name_    = "freenect.dll";
-  private static String dll_dir_windows_x32_ = "/windows32/";
-  private static String dll_dir_windows_x64_ = "/windows64/";
-  
-  private static String dll_path_ = "";
+  private static String freenect_windows_ = "freenect.dll";
+  private static String jar_path_ = "";
   
   private static Libfreenect LIBFREENECT_ = null;
   
   // STATIC
   static{ 
-    System.out.println(LIBRARY.LABEL.getValue() );
-    try {
-      URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
-      dll_path_ = new File(uri_.getPath()).getParent();
-    } catch (URISyntaxException e) {}
+//    boolean info_state  = KinectLogger.TYPE.INFO.isActive();
+//    KinectLogger.TYPE.INFO.active(true);
     
-    if (System.getProperty("os.name").contains("Windows")) {
-      if( System.getProperty("sun.arch.data.model").equals("32") ){
-        dll_path_ += dll_dir_windows_x32_; 
-      } else {
-       dll_path_ += dll_dir_windows_x64_;
-      }
-    } else {
-      KinectLogger.log(KinectLogger.TYPE.ERROR, null, "FAILED: dLibs.freenect currently only runs on windows");
+    System.out.println(LIBRARY.LABEL.getValue() );
+    KinectLogger.log(KinectLogger.TYPE.INFO, null, 
+        "os.name              = " + System.getProperty("os.name"),
+        "sun.arch.data.model  = " + System.getProperty("sun.arch.data.model") +" bit",
+        "java.runtime.version = " + System.getProperty("java.runtime.version" ),
+        "java.home            = " + System.getProperty("java.home" )
+    );
+    
+    if(Platform.isWindows()){
+      try {
+        URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
+        jar_path_ = new File(uri_.getPath()).getParent();
+      } catch (URISyntaxException e) {}
+      String path_ = jar_path_ + "/windows" + System.getProperty("sun.arch.data.model") + "/"; 
+      loadLibrary(path_, freenect_windows_); 
+    }   
+    
+    if(Platform.isLinux()){
+      KinectLogger.log(KinectLogger.TYPE.ERROR, null, "FAILED: dLibs.freenect currently doesnt run under Linux");
+    }  
+    if(Platform.isMac()){
+      KinectLogger.log(KinectLogger.TYPE.ERROR, null, "FAILED: dLibs.freenect currently doesnt run under MacOs");
+    }    
+    
+    if( jar_path_.length() != 0){
+      System.setProperty("jna.library.path", jar_path_);
     }
-
-    loadLibrary(dll_path_, dll_name_); 
+//    KinectLogger.TYPE.INFO.active(info_state);
   }
 
   // CONSTRUCTOR
@@ -78,32 +89,23 @@ final class FreenectLibrary{
   ////----------------------------------------------------------------------------
   ////--------------------------- LOAD LIBRARY -----------------------------------
   ////----------------------------------------------------------------------------
-  public static final void loadLibrary(String dll_path , String dll_name)  { 
- 
-    boolean info_state  = KinectLogger.TYPE.INFO.isActive();
-    boolean error_state = KinectLogger.TYPE.ERROR.isActive();
-    KinectLogger.TYPE.INFO.active(true);
-    
-    KinectLogger.log(KinectLogger.TYPE.INFO, null, 
-        "os.name              = " + System.getProperty("os.name"),
-        "sun.arch.data.model  = " + System.getProperty("sun.arch.data.model") +" bit",
-        "java.runtime.version = " + System.getProperty("java.runtime.version" ),
-        "java.home            = " + System.getProperty("java.home" )
-    );
+  public static final void loadLibrary(String freenect_path , String freenect_name)  { 
     try {
-      Libfreenect LIBFREENECT_TMP = (Libfreenect) Native.loadLibrary(  dll_path+dll_name,  Libfreenect.class);
+      Libfreenect LIBFREENECT_TMP = (Libfreenect) Native.loadLibrary(  freenect_path+freenect_name,  Libfreenect.class);
       LIBFREENECT_ = LIBFREENECT_TMP;
       
       KinectLogger.log(KinectLogger.TYPE.INFO, null, 
           "LIBRARY LOADED", 
-          "path = \""+dll_path+dll_name+"\"" 
+          "path = \""+freenect_path+freenect_name+"\"" 
       );
-      KinectLogger.TYPE.INFO.active(info_state);
     } catch ( UnsatisfiedLinkError e ){
       if( LIBFREENECT_ != null )  
         return;   // library was loaded previously
+      boolean error_state = KinectLogger.TYPE.ERROR.isActive();
       KinectLogger.TYPE.ERROR.active(true);
-      KinectLogger.log(KinectLogger.TYPE.ERROR, null,  "Unable to load library : "+dll_name, "path = \""+dll_path+dll_name+"\"", "try 'MyKinect.loadLibrary( \"your dll path/\", \"freenect.dll\" )'");
+      KinectLogger.log(KinectLogger.TYPE.ERROR, null,  
+          "Unable to load library : "+freenect_name, 
+          "path = \""+freenect_path+freenect_name+"\"", "try 'MyKinect.loadLibrary( \"your dll path/\", \"freenect.dll\" )'");
       KinectLogger.TYPE.ERROR.active(error_state);
     }
   }
@@ -140,13 +142,6 @@ final class FreenectLibrary{
     abstract void      freenect_set_log_callback   ( KinectContext ctx, CallbackHandler.LogCB   log_cb_ );
     abstract void      freenect_set_depth_callback ( KinectDevice  dev, CallbackHandler.DepthCB depth_cb_ );
     abstract void      freenect_set_video_callback ( KinectDevice  dev, CallbackHandler.VideoCB video_cb_ );
-    
-//    abstract Pointer   freenect_get_user           ( KinectDevice dev );
-//    abstract void      freenect_set_user           ( KinectDevice dev, Pointer user );
-
-    
-//    abstract int       freenect_set_depth_format   ( KinectDevice dev, int i ); // deprecated
-//    abstract int       freenect_set_video_format   ( KinectDevice dev, int i ); // deprecated
     
     abstract int               freenect_get_video_mode_count();
     abstract KinectFrameMode   freenect_get_video_mode  (int mode_num);
