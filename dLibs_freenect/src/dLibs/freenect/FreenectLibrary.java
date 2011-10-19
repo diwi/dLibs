@@ -62,12 +62,7 @@ final class FreenectLibrary{
     );
     
     if(Platform.isWindows()){
-      try {
-        URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
-        jar_path_ = new File(uri_.getPath()).getParent();
-      } catch (URISyntaxException e) {}
-      String path_ = jar_path_ + "/windows" + System.getProperty("sun.arch.data.model") + "/"; 
-      loadLibrary(path_, freenect_windows_); 
+      loadLibrary( getFreenectForWindows(), freenect_windows_); 
     }   
     
     if(Platform.isLinux()){
@@ -82,14 +77,42 @@ final class FreenectLibrary{
     }
 //    KinectLogger.TYPE.INFO.active(info_state);
   }
+  
+  private static final String getFreenectForWindows(){
+    try {
+      URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
+      jar_path_ = new File(uri_.getPath()).getParent();
+    } catch (URISyntaxException e) {}
+    
+    String path;
+    
+    // case 1: default freenect.dll path
+    path = jar_path_ + "/windows" + System.getProperty("sun.arch.data.model") + "/";
+    if( new File(path + freenect_windows_).exists() ) return path;
+    
+    // case 2: application freenect.dll path - version 1
+    path = jar_path_+"/";
+    if( new File(path + freenect_windows_).exists() ) return path;
+    
+    // case 3: application freenect.dll path - version 2
+    path = new File(jar_path_).getParentFile().getPath() + "/";
+    if( new File(path + freenect_windows_).exists() ) return path;
+    
+    return "";
+  }
+  
+  
 
   // CONSTRUCTOR
   private FreenectLibrary(){}
    
+
+  
+  
   ////----------------------------------------------------------------------------
   ////--------------------------- LOAD LIBRARY -----------------------------------
   ////----------------------------------------------------------------------------
-  public static final void loadLibrary(String freenect_path , String freenect_name)  { 
+  protected static final void loadLibrary(String freenect_path , String freenect_name)  { 
     try {
       Libfreenect LIBFREENECT_TMP = (Libfreenect) Native.loadLibrary(  freenect_path+freenect_name,  Libfreenect.class);
       LIBFREENECT_ = LIBFREENECT_TMP;
