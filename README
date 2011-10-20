@@ -2,7 +2,12 @@
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 AUTHOR: Thomas Diewald
-Date: 23.04.2011
+
+Date:        23.04.2011
+last edited: 20.10.2011
+
+author:    www.thomasdiewald.com
+library:   http://www.thomasdiewald.com/processing/libraries/dLibs_freenect/
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
@@ -19,7 +24,6 @@ PROCESSING / JAVA - Kinect Library - dLibs.freenect
 - it only works on windows Machines (winXP, win7, ... x86, x64)
 - i tested it with the following processing versions:
   "processing 1.07" to "processing 1.5"
-- there is no guarantee that it really works on every machine
 
 
 --------------------------------------------------------------------------------
@@ -29,7 +33,8 @@ ZIP_CONTENT:
 3) source-code
 4) library:  
       dlibs_freenect.jar
-      libfreenect/freenect.dll
+      windows32/freenect.dll
+      windows64/freenect.dll
       kinect_driver_windows/xbox nui camera, ...motor, ...audio
       calibration/kinect_calibration_red.yml, ...kinect_calibration_yellow.yml
       
@@ -72,11 +77,15 @@ HOW TO USE IT
 INSTALLATION:
 --------------------------------------------------------------------------------
 1)
-  download the library: https://github.com/diwi/dLibs
+  download the library: 
+  https://github.com/diwi/dLibs
+  or
+  http://www.thomasdiewald.com/processing/libraries/dLibs_freenect/
  
 2)
   extract archieve and move the folder "dLibs_freenect" to your library folder 
-  insider your sketchbook-location.
+  inside your sketchbook-location.
+  http://wiki.processing.org/w/How_to_Install_a_Contributed_Library
 
 3)
   connect the kinect to your pc
