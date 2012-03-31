@@ -1,7 +1,23 @@
 /**
- * dLibs.freenect - Kinect Java/Processing Library.
  * 
- * Copyright (c) 2011 Thomas Diewald
+ * dLibs_freenect v2.95
+ * 
+ * a kinect library based on the libfreenect-software.
+ * 
+ * 
+ * 
+ *   (C) 2012    Thomas Diewald
+ *               http://www.thomasdiewald.com
+ *   
+ *   last built: 03/31/2012
+ *   
+ *   download:   http://thomasdiewald.com/processing/libraries/dLibs_freenect/
+ *   source:     https://github.com/diwi/dLibs 
+ *   
+ *   tested OS:  windows(x86, x64)
+ *   processing: 1.5.1, 2.05
+ *
+ *
  *
  *
  * This source is free software; you can redistribute it and/or modify
@@ -19,6 +35,10 @@
  * obtain it by writing to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+
+
+
 
 package dLibs.freenect;
 
@@ -67,8 +87,9 @@ public class KinectFrameDepth extends KinectFrame{
   
   /**
    * define the colormode of the depth-frame
-   * 0 ... gray depth-map
-   * 1 ... HSB depth-map (chosen by default)
+   * 0 ... gray depth-map<br>
+   * 1 ... HSB depth-map (chosen by default)<br>
+   * >= 2 ... just the raw depth depth is generated (it's up to the user to make a custom depth-map)
    * 
    * @param color_mode
    */
@@ -80,7 +101,8 @@ public class KinectFrameDepth extends KinectFrame{
 
   protected final void frame_11BIT_(){
     int d_1, d_2;
-    if( color_mode_ == 0 ){
+    if( color_mode_ == 0 )
+    {
       int gray;
       for(int i = 0; i < pixels_colors_tmp_.length; i++){
         d_1 = buffer_cpy_[i*2+0] & 0xFF;
@@ -89,12 +111,21 @@ public class KinectFrameDepth extends KinectFrame{
         gray = ((int) KinectUtilitys.map(raw_depth[i], 330, 1150, 255, 0))& 0xFF ;
         pixels_colors_tmp_[i] =  0xFF000000 | gray<<16 | gray<<8 | gray<<0  ;
       }
-    } else {
+    } 
+    else if (color_mode_ == 1 )
+    {
       for(int i = 0; i < pixels_colors_tmp_.length; i++){
         d_1 = buffer_cpy_[i*2+0]& 0xFF;
         d_2 = buffer_cpy_[i*2+1]& 0xFF;
         raw_depth[i] = d_2 << 8 | d_1;
         pixels_colors_tmp_[i] = KinectUtilitys.depth2rgb( raw_depth[i] );
+      }
+    }
+    else {
+      for(int i = 0; i < pixels_colors_tmp_.length; i++){
+        d_1 = buffer_cpy_[i*2+0]& 0xFF;
+        d_2 = buffer_cpy_[i*2+1]& 0xFF;
+        raw_depth[i] = d_2 << 8 | d_1;
       }
     }
   }

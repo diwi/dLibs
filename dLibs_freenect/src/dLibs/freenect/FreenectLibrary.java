@@ -1,7 +1,23 @@
 /**
- * dLibs.freenect - Kinect Java/Processing Library.
  * 
- * Copyright (c) 2011 Thomas Diewald
+ * dLibs_freenect v2.95
+ * 
+ * a kinect library based on the libfreenect-software.
+ * 
+ * 
+ * 
+ *   (C) 2012    Thomas Diewald
+ *               http://www.thomasdiewald.com
+ *   
+ *   last built: 03/31/2012
+ *   
+ *   download:   http://thomasdiewald.com/processing/libraries/dLibs_freenect/
+ *   source:     https://github.com/diwi/dLibs 
+ *   
+ *   tested OS:  windows(x86, x64)
+ *   processing: 1.5.1, 2.05
+ *
+ *
  *
  *
  * This source is free software; you can redistribute it and/or modify
@@ -19,6 +35,10 @@
  * obtain it by writing to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+
+
+
 
 package dLibs.freenect;
 
@@ -44,6 +64,9 @@ import dLibs.freenect.toolbox.KinectLogger;
 final class FreenectLibrary{
   
   private static String freenect_windows_ = "freenect.dll";
+  private static String freenect_macOS_   = "freenect.xxx"; // TODO
+  private static String freenect_linux_   = "freenect.xxx"; // TODO
+  
   private static String jar_path_ = "";
   
   private static Libfreenect LIBFREENECT_ = null;
@@ -61,24 +84,34 @@ final class FreenectLibrary{
         "java.home            = " + System.getProperty("java.home" )
     );
     
-    if(Platform.isWindows()){
-      loadLibrary( getFreenectForWindows(), freenect_windows_); 
+    if(Platform.isWindows())
+    {
+      loadLibrary( getFreenectPathForWindows(), freenect_windows_); 
     }   
-    
-    if(Platform.isLinux()){
+    else if(Platform.isLinux())
+    {
+      // TODO
       KinectLogger.log(KinectLogger.TYPE.ERROR, null, "FAILED: dLibs.freenect currently doesnt run under Linux");
+//      loadLibrary( getFreenectPathForLinux(), freenect_linux_); 
     }  
-    if(Platform.isMac()){
+    else if(Platform.isMac())
+    {
+      // TODO
       KinectLogger.log(KinectLogger.TYPE.ERROR, null, "FAILED: dLibs.freenect currently doesnt run under MacOs");
+//      loadLibrary( getFreenectPathForMacOS(), freenect_macOS_); 
     }    
     
-    if( jar_path_.length() != 0){
-      System.setProperty("jna.library.path", jar_path_);
-    }
+    // doesn't seem to be necessary
+//  if( jar_path_.length() != 0){
+//    System.setProperty("jna.library.path", jar_path_);
+//  }
+//  KinectLogger.TYPE.INFO.active(info_state);
 //    KinectLogger.TYPE.INFO.active(info_state);
   }
   
-  private static final String getFreenectForWindows(){
+  
+  // find the native freenect library path, for windows
+  private static final String getFreenectPathForWindows(){
     String path = "";
     try {
       URI uri_ = new URI( FreenectLibrary.class.getProtectionDomain().getCodeSource().getLocation().getPath() );
@@ -101,6 +134,20 @@ final class FreenectLibrary{
     
     return path;
   }
+  
+  //TODO: find the native freenect library path, for macOS
+  private static final String getFreenectPathForMacOS(){
+    String path = "";
+    return path;
+  }
+  
+  //TODO: find the native freenect library path, for Linux
+  private static final String getFreenectPathForLinux(){
+    String path = "";
+    return path;
+  }
+  
+
   
   
 

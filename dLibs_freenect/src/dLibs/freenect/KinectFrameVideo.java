@@ -1,7 +1,23 @@
 /**
- * dLibs.freenect - Kinect Java/Processing Library.
  * 
- * Copyright (c) 2011 Thomas Diewald
+ * dLibs_freenect v2.95
+ * 
+ * a kinect library based on the libfreenect-software.
+ * 
+ * 
+ * 
+ *   (C) 2012    Thomas Diewald
+ *               http://www.thomasdiewald.com
+ *   
+ *   last built: 03/31/2012
+ *   
+ *   download:   http://thomasdiewald.com/processing/libraries/dLibs_freenect/
+ *   source:     https://github.com/diwi/dLibs 
+ *   
+ *   tested OS:  windows(x86, x64)
+ *   processing: 1.5.1, 2.05
+ *
+ *
  *
  *
  * This source is free software; you can redistribute it and/or modify
@@ -19,6 +35,10 @@
  * obtain it by writing to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+
+
+
 
 package dLibs.freenect;
 

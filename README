@@ -4,7 +4,7 @@
 AUTHOR: Thomas Diewald
 
 Date:        23.04.2011
-last edited: 20.10.2011
+last edited: 31.03.2012
 
 author:    www.thomasdiewald.com
 library:   http://www.thomasdiewald.com/processing/libraries/dLibs_freenect/
@@ -23,7 +23,7 @@ PROCESSING / JAVA - Kinect Library - dLibs.freenect
 - this library is based on the libfreenect-software (http://openkinect.org)
 - it only works on windows Machines (winXP, win7, ... x86, x64)
 - i tested it with the following processing versions:
-  "processing 1.07" to "processing 1.5"
+  processing 1.07, processing 1.5, processing 2.0a5
 
 
 --------------------------------------------------------------------------------

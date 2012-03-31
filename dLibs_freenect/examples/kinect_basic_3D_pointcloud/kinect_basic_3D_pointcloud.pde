@@ -2,7 +2,7 @@
 //---------------------------------------------
 //
 // author: thomas diewald
-// date:   21.04.2011
+// date:   31.03.2012
 // 
 // desc: basic example to get a simple pointcloud from kinect
 //
